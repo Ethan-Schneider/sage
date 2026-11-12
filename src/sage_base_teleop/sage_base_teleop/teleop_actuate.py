@@ -11,6 +11,8 @@ from std_msgs.msg import String
 from sage_base_teleop.motors import Motor, MotorCalibration, MotorNormMode, SerialMotorsBus
 from sage_base_teleop.utils.decorators import check_if_already_connected, check_if_not_connected
 
+from sage_base_teleop.lekiwi.config_lekiwi import LeKiwiConfig
+
 import numpy as np
 
 import tty, termios, sys, select
@@ -35,7 +37,7 @@ class TeleoperationActuateNode(Node):
     def __init__(self):
         super().__init__('teleop_actuate')
         self.subscriber = self.create_subscription(Twist, 'cmd_vel', self.actuate_callback, 10)
-
+        self.config = LeKiwiConfig
         self.bus = SerialMotorsBus(
             port=self.config.port,
             motors={
@@ -51,7 +53,7 @@ class TeleoperationActuateNode(Node):
                 "base_back_wheel": Motor(8, "sts3215", MotorNormMode.RANGE_M100_100),
                 "base_right_wheel": Motor(9, "sts3215", MotorNormMode.RANGE_M100_100),
             },
-            calibration=self.calibration,
+            # calibration=self.calibration,
         )
         # self.arm_motors = [motor for motor in self.bus.motors if motor.startswith("arm")]
         self.base_motors = [motor for motor in self.bus.motors if motor.startswith("base")]
