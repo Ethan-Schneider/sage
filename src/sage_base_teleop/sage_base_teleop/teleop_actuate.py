@@ -9,7 +9,6 @@ from geometry_msgs.msg import Twist, Vector3
 from std_msgs.msg import String
 
 from sage_base_teleop.motors import Motor, MotorCalibration, MotorNormMode, SerialMotorsBus
-from sage_base_teleop.utils.decorators import check_if_already_connected, check_if_not_connected
 
 from sage_base_teleop.lekiwi.config_lekiwi import LeKiwiConfig
 
@@ -195,8 +194,6 @@ class TeleoperationActuateNode(Node):
             "theta.vel": theta,
         }  # m/s and deg/s
 
-
-    @check_if_not_connected
     def send_action(self, x : float, y : float, theta : float) -> Twist:
         """Command lekiwi to move to a target joint configuration.
 
@@ -236,13 +233,12 @@ class TeleoperationActuateNode(Node):
         # self.bus.sync_write("Goal_Position", arm_goal_pos_raw)
         self.bus.sync_write("Goal_Velocity", base_wheel_goal_vel)
 
-        return {**base_goal_vel}
+        return {**base_wheel_goal_vel}
 
     def stop_base(self):
         self.bus.sync_write("Goal_Velocity", dict.fromkeys(self.base_motors, 0), num_retry=5)
         self.get_logger().info("Base motors stopped")
 
-    @check_if_not_connected
     def disconnect(self):
         self.stop_base()
         self.bus.disconnect(self.config.disable_torque_on_disconnect)
