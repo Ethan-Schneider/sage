@@ -27,10 +27,10 @@ from functools import cached_property
 from pprint import pformat
 from typing import TYPE_CHECKING, TypeAlias
 
-from utils.decorators import check_if_already_connected, check_if_not_connected
-from utils.errors import DeviceNotConnectedError
-from utils.import_utils import _rustypot_available, require_package
-from utils.utils import enter_pressed, move_cursor_up
+from sage_base_teleop.utils.decorators import check_if_already_connected, check_if_not_connected
+from sage_base_teleop.utils.errors import DeviceNotConnectedError
+from sage_base_teleop.utils.import_utils import _rustypot_available, require_package
+from sage_base_teleop.utils.utils import enter_pressed, move_cursor_up
 
 if TYPE_CHECKING or _rustypot_available:
     import rustypot

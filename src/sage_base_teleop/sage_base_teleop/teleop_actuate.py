@@ -8,8 +8,8 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from geometry_msgs.msg import Twist, Vector3
 from std_msgs.msg import String
 
-from motors import Motor, MotorCalibration, MotorNormMode, SerialMotorsBus
-from utils.decorators import check_if_already_connected, check_if_not_connected
+from sage_base_teleop.motors import Motor, MotorCalibration, MotorNormMode, SerialMotorsBus
+from sage_base_teleop.utils.decorators import check_if_already_connected, check_if_not_connected
 
 import numpy as np
 
