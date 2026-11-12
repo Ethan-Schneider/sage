@@ -54,15 +54,15 @@ class TeleoperationActuateNode(Node):
             },
             # calibration=self.calibration,
         )
+
+        # self.arm_motors = [motor for motor in self.bus.motors if motor.startswith("arm")]
+        self.base_motors = [motor for motor in self.bus.motors if motor.startswith("base")]
+        # self.subscriber
         self.bus.connect()
         self.bus.disable_torque()
         self.bus.configure_motors()
         self.bus.set_operating_mode("velocity", self.base_motors)
         self.bus.enable_torque()
-
-        # self.arm_motors = [motor for motor in self.bus.motors if motor.startswith("arm")]
-        self.base_motors = [motor for motor in self.bus.motors if motor.startswith("base")]
-        # self.subscriber
 
     def actuate_callback(self, msg : Twist):
 
