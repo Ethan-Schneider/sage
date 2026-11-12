@@ -23,6 +23,14 @@ MAX_ANGULAR_VAL=90
 
 settings = termios.tcgetattr(sys.stdin)
 
+@staticmethod
+def _degps_to_raw(degps: float) -> int:
+    steps_per_deg = 4096.0 / 360.0
+    speed_in_steps = degps * steps_per_deg
+    speed_int = int(round(speed_in_steps))
+    # Goal_Velocity is sign-magnitude with the sign on bit 15: at most 32767 either way.
+    return max(-0x7FFF, min(0x7FFF, speed_int))
+
 def get_key(settings):
     tty.setraw(sys.stdin.fileno())
     select.select([sys.stdin], [], [], 0)
