@@ -23,14 +23,6 @@ MAX_ANGULAR_VAL=90
 
 settings = termios.tcgetattr(sys.stdin)
 
-@staticmethod
-def _degps_to_raw(degps: float) -> int:
-    steps_per_deg = 4096.0 / 360.0
-    speed_in_steps = degps * steps_per_deg
-    speed_int = int(round(speed_in_steps))
-    # Goal_Velocity is sign-magnitude with the sign on bit 15: at most 32767 either way.
-    return max(-0x7FFF, min(0x7FFF, speed_int))
-
 def get_key(settings):
     tty.setraw(sys.stdin.fileno())
     select.select([sys.stdin], [], [], 0)
@@ -62,6 +54,12 @@ class TeleoperationActuateNode(Node):
             },
             # calibration=self.calibration,
         )
+        self.bus.connect()
+        self.bus.disable_torque()
+        self.bus.configure_motors()
+        self.bus.set_operating_mode("velocity", self.base_motors)
+        self.bus.enable_torque()
+
         # self.arm_motors = [motor for motor in self.bus.motors if motor.startswith("arm")]
         self.base_motors = [motor for motor in self.bus.motors if motor.startswith("base")]
         # self.subscriber
@@ -73,13 +71,13 @@ class TeleoperationActuateNode(Node):
         theta = msg.angular.z
 
         if np.abs(x) > MAX_LINEAR_VAL:
-            x = np.sign*MAX_LINEAR_VAL
+            x = np.sign(x)*MAX_LINEAR_VAL
 
         if np.abs(y) > MAX_LINEAR_VAL:
-            y = np.sign*MAX_LINEAR_VAL
+            y = np.sign(y)*MAX_LINEAR_VAL
 
         if np.abs(theta) > MAX_ANGULAR_VAL:
-            theta = np.sign*MAX_ANGULAR_VAL
+            theta = np.sign(theta)*MAX_ANGULAR_VAL
 
 
         self.send_action(x, y, theta)
@@ -254,6 +252,14 @@ class TeleoperationActuateNode(Node):
             cam.disconnect()
 
         self.get_logger().info(f"{self} disconnected.")
+
+    @staticmethod
+    def _degps_to_raw(degps: float) -> int:
+        steps_per_deg = 4096.0 / 360.0
+        speed_in_steps = degps * steps_per_deg
+        speed_int = int(round(speed_in_steps))
+        # Goal_Velocity is sign-magnitude with the sign on bit 15: at most 32767 either way.
+        return max(-0x7FFF, min(0x7FFF, speed_int))
 
 
 def main(args=None):
